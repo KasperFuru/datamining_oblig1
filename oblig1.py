@@ -7,13 +7,39 @@ import pandas as pd
 # Load the data
 df = pd.read_csv('./datasett_oppgave1.csv', delimiter=';', encoding='windows-1252')
 
+# print(df['date'])
+ 
+# Convert latitude and longitude to numeric types
+df['latitude'] = pd.to_numeric(df['latitude'], errors='coerce')
+df['longitude'] = pd.to_numeric(df['longitude'], errors='coerce')
+
+# Define latitude and longitude range
+lat_min, lat_max = 58, 60.1  # Example range for latitude
+lon_min, lon_max = 7.5, 11  # Example range for longitude
+
+# Filter the DataFrame based on the latitude and longitude range
+df_filtered = df[(df['latitude'] >= lat_min) & (df['latitude'] <= lat_max) &
+                 (df['longitude'] >= lon_min) & (df['longitude'] <= lon_max)]
+
 # Ensure the DataFrame has 'latitude' and 'longitude' columns
-if 'latitude' in df.columns and 'longitude' in df.columns:
-    fig = px.scatter_geo(df, lat='latitude', lon='longitude', 
+if 'latitude' in df_filtered.columns and 'longitude' in df_filtered.columns:
+    fig = px.scatter_geo(df_filtered, lat='latitude', lon='longitude', 
                          title='Geographical Scatter Plot',
-                         hover_name='category')  # Assuming 'category' is a column you want to show on hover
+                         hover_name='category',
+                         color='category',
+                         scope='europe')  # Assuming 'category' is a column you want to show on hover
 else:
     raise ValueError("DataFrame does not have 'latitude' and 'longitude' columns.")
+
+# Extract the year from the date column using string slicing
+df_filtered['year'] = df_filtered['date'].str[1:5].astype(int)
+
+# Group by 'category' and 'year' and count occurrences
+category_year_counts = df_filtered.groupby(['category', 'year']).size().reset_index(name='count')
+
+# Create a bar chart that shows the difference in years
+fig_bar = px.bar(category_year_counts, x='category', y='count', color='year', barmode='group', 
+                 title='Occurrence of Each Unique Category by Year')
 
 # Initialize the Dash app
 app = dash.Dash(__name__)
@@ -25,6 +51,11 @@ app.layout = html.Div(children=[
     dcc.Graph(
         id='geo-scatter-plot',
         figure=fig
+    ),
+
+    dcc.Graph(
+        id='category-bar-chart',
+        figure=fig_bar
     )
 ])
 
