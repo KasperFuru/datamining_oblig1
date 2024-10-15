@@ -8,7 +8,8 @@ import pandas as pd
 df = pd.read_csv('./datasett_oppgave1.csv', delimiter=';', encoding='windows-1252')
 
 # print(df['date'])
- 
+# Print rows where 'isValidated' is False
+print(df[df['isValidated'] == False])
 # Convert latitude and longitude to numeric types
 df['latitude'] = pd.to_numeric(df['latitude'], errors='coerce')
 df['longitude'] = pd.to_numeric(df['longitude'], errors='coerce')
@@ -34,6 +35,8 @@ else:
 # Extract the year from the date column using string slicing
 df_filtered['year'] = df_filtered['date'].str[1:5].astype(int)
 
+# Only keep data that has been validated
+#df_filtered = df_filtered[df_filtered['isValidated'] == True]
 # Group by 'category' and 'year' and count occurrences
 category_year_counts = df_filtered.groupby(['category', 'year']).size().reset_index(name='count')
 
