@@ -1,7 +1,7 @@
 # Data Mining Obligatorisk Oppgave 1
 
-## Requirements
-To run the notebook, you will need the following packages:
+## Pakker som trengs for å kjøre
+For å kjøre notebooken, trenger du følgende pakker:
 - Python 3.x
 - Jupyter Notebook
 - pandas
